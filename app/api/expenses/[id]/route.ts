@@ -3,10 +3,11 @@ import getDb from '@/lib/db';
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await getDb().execute({ sql: 'DELETE FROM expenses WHERE id = ?', args: [parseInt(params.id)] });
+    const { id: paramId } = await params;
+    await getDb().execute({ sql: 'DELETE FROM expenses WHERE id = ?', args: [parseInt(paramId)] });
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete expense' }, { status: 500 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -160,7 +160,8 @@ function Section({ title, icon: Icon, children }: {
 }
 
 // ---- Main Page ----
-export default function ItemDetailPage({ params }: { params: { id: string } }) {
+export default function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: itemId } = use(params);
   const router = useRouter();
   const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
@@ -176,17 +177,17 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
   const [addingTask, setAddingTask] = useState(false);
 
   const fetchItem = useCallback(async () => {
-    const res = await fetch(`/api/items/${params.id}`);
+    const res = await fetch(`/api/items/${itemId}`);
     if (!res.ok) { router.push('/inventory'); return; }
     const data = await res.json();
     setItem(data);
     setLoading(false);
-  }, [params.id, router]);
+  }, [itemId, router]);
 
   useEffect(() => { fetchItem(); }, [fetchItem]);
 
   const patch = useCallback(async (fields: Partial<Item>) => {
-    const res = await fetch(`/api/items/${params.id}`, {
+    const res = await fetch(`/api/items/${itemId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(fields),
@@ -195,11 +196,11 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
       const updated = await res.json();
       setItem(prev => prev ? { ...prev, ...updated, expenses: prev.expenses, tasks: prev.tasks } : null);
     }
-  }, [params.id]);
+  }, [itemId]);
 
   const deleteItem = async () => {
     if (!confirm('Delete this item and all its data? This cannot be undone.')) return;
-    await fetch(`/api/items/${params.id}`, { method: 'DELETE' });
+    await fetch(`/api/items/${itemId}`, { method: 'DELETE' });
     router.push('/inventory');
   };
 
@@ -210,7 +211,7 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
     const res = await fetch('/api/expenses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...expForm, item_id: params.id, amount: parseFloat(expForm.amount) }),
+      body: JSON.stringify({ ...expForm, item_id: itemId, amount: parseFloat(expForm.amount) }),
     });
     if (res.ok) {
       const exp = await res.json();
@@ -255,7 +256,7 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
     const res = await fetch('/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ item_id: params.id, name: newTaskName.trim() }),
+      body: JSON.stringify({ item_id: itemId, name: newTaskName.trim() }),
     });
     if (res.ok) {
       const task = await res.json();
@@ -275,7 +276,7 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
     setUploading(true);
     const fd = new FormData();
     fd.append('file', file);
-    fd.append('item_id', params.id);
+    fd.append('item_id', itemId);
     const res = await fetch('/api/upload', { method: 'POST', body: fd });
     if (res.ok) {
       const { url } = await res.json();

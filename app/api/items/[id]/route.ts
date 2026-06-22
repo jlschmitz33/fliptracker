@@ -10,11 +10,12 @@ const ITEM_WITH_TOTALS = `
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getDb();
-    const id = parseInt(params.id);
+    const { id: paramId } = await params;
+    const id = parseInt(paramId);
 
     const [itemRs, expRs, taskRs] = await Promise.all([
       db.execute({ sql: ITEM_WITH_TOTALS, args: [id] }),
@@ -34,11 +35,12 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getDb();
-    const id = parseInt(params.id);
+    const { id: paramId } = await params;
+    const id = parseInt(paramId);
     const body = await request.json();
 
     const allowed = [
@@ -70,11 +72,12 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getDb();
-    await db.execute({ sql: 'DELETE FROM items WHERE id = ?', args: [parseInt(params.id)] });
+    const { id: paramId } = await params;
+    await db.execute({ sql: 'DELETE FROM items WHERE id = ?', args: [parseInt(paramId)] });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('DELETE /api/items/[id] error:', error);

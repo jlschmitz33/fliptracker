@@ -3,11 +3,12 @@ import getDb, { firstRow } from '@/lib/db';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const db = getDb();
-    const id = parseInt(params.id);
+    const { id: paramId } = await params;
+    const id = parseInt(paramId);
     const body = await request.json();
 
     const updates: string[] = [];
@@ -33,10 +34,11 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await getDb().execute({ sql: 'DELETE FROM tasks WHERE id = ?', args: [parseInt(params.id)] });
+    const { id: paramId } = await params;
+    await getDb().execute({ sql: 'DELETE FROM tasks WHERE id = ?', args: [parseInt(paramId)] });
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete task' }, { status: 500 });
