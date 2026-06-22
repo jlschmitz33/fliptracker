@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node --version)",
+      "PowerShell(npm show better-sqlite3 version 2>&1)",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__navigate",
+      "Bash(curl -s http://localhost:3000/api/items)",
+      "Bash(curl -s -X POST http://localhost:3000/api/seed)",
+      "Bash(python3 -c \"import sys,json; items=json.load\\(sys.stdin\\); [print\\(i['name'], i['status'], i['total_cost']\\) for i in items[:3]]\")",
+      "Bash(curl -s http://localhost:3000/api/stats)",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\jlsch\\\\OneDrive\\\\Desktop\\\\FlipTracker\"; $env:TURSO_DATABASE_URL = \"file:./data/fliptracker.db\"; npm run dev 2>&1 | Select-Object -First 3)",
+      "Bash(TURSO_DATABASE_URL=\"file:./data/fliptracker.db\" npx next dev)",
+      "Bash(curl -s -X POST http://localhost:3000/api/init)"
+    ]
+  }
+}
