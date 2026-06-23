@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 
-const TYPES = ['outboard', 'boat', 'trailer', 'bundle'];
+const TYPES = ['outboard', 'trolling motor', 'boat', 'trailer', 'bundle'];
 const STATUSES = ['Looking At', 'Purchased', 'Repairing', 'Listed'];
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -43,7 +43,7 @@ export default function NewItemPage() {
         body: JSON.stringify({
           ...form,
           year: form.year ? parseInt(form.year) : null,
-          horsepower: form.horsepower ? parseInt(form.horsepower) : null,
+          horsepower: form.horsepower ? parseFloat(form.horsepower) : null,
           purchase_price: form.purchase_price ? parseFloat(form.purchase_price) : 0,
         }),
       });
@@ -110,7 +110,7 @@ export default function NewItemPage() {
 
           <Field label="Horsepower">
             <input type="number" value={form.horsepower} onChange={set('horsepower')}
-              placeholder="115" min="1" className={inputCls} />
+              placeholder="9.9" min="0" step="0.1" className={inputCls} />
           </Field>
 
           <Field label="Serial Number">

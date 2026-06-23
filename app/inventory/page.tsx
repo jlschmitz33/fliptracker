@@ -24,7 +24,7 @@ interface Item {
 }
 
 const STATUSES = ['All', 'Looking At', 'Purchased', 'Repairing', 'Listed', 'Sold', 'Passed'];
-const TYPES = ['all', 'outboard', 'boat', 'trailer', 'bundle'];
+const TYPES = ['all', 'outboard', 'trolling motor', 'boat', 'trailer', 'bundle'];
 
 const STATUS_COLORS: Record<string, string> = {
   'Looking At': 'bg-slate-200 text-slate-700',

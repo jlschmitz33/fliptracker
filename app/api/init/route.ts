@@ -61,6 +61,16 @@ export async function POST() {
         FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
       )
     `);
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS overhead_expenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        category TEXT NOT NULL,
+        description TEXT,
+        amount REAL NOT NULL,
+        date TEXT NOT NULL DEFAULT (date('now')),
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )
+    `);
     return NextResponse.json({ success: true, message: 'Database initialized' });
   } catch (error) {
     console.error('Init error:', error);

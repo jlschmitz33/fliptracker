@@ -61,7 +61,7 @@ interface Item {
 
 // ---- Constants ----
 const STATUSES = ['Looking At', 'Purchased', 'Repairing', 'Listed', 'Sold', 'Passed'];
-const TYPES = ['outboard', 'boat', 'trailer', 'bundle'];
+const TYPES = ['outboard', 'trolling motor', 'boat', 'trailer', 'bundle'];
 const PLATFORMS = ['Facebook Marketplace', 'Craigslist', 'eBay', 'OfferUp', 'Boat Trader', 'Other'];
 const PAYMENT_METHODS = ['Cash', 'Venmo', 'PayPal', 'Zelle', 'Check', 'Bank Transfer', 'Other'];
 const EXPENSE_CATEGORIES = [
@@ -90,12 +90,13 @@ function fmtDate(s?: string) {
 const inputCls = 'w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white';
 
 // ---- Editable Field ----
-function EditableField({ label, value, onSave, type = 'text', options }: {
+function EditableField({ label, value, onSave, type = 'text', options, step }: {
   label: string;
   value: string;
   onSave: (v: string) => void;
   type?: string;
   options?: string[];
+  step?: string;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -130,7 +131,7 @@ function EditableField({ label, value, onSave, type = 'text', options }: {
         <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={3}
           className={`${inputCls} resize-none`} />
       ) : (
-        <input type={type} value={draft} onChange={e => setDraft(e.target.value)} className={inputCls} />
+        <input type={type} step={step} value={draft} onChange={e => setDraft(e.target.value)} className={inputCls} />
       )}
       <div className="flex gap-2 mt-1.5">
         <button onClick={save} className="flex items-center gap-1 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700">
@@ -403,7 +404,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
           <EditableField label="Model" value={item.model || ''}
             onSave={v => patch({ model: v })} />
           <EditableField label="Horsepower" value={item.horsepower?.toString() || ''}
-            onSave={v => patch({ horsepower: v ? parseInt(v) : undefined })} type="number" />
+            onSave={v => patch({ horsepower: v ? parseFloat(v) : undefined })} type="number" step="0.1" />
           <EditableField label="Serial Number" value={item.serial_number || ''}
             onSave={v => patch({ serial_number: v })} />
           <EditableField label="Purchase Date" value={item.purchase_date || ''}

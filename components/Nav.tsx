@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, PlusCircle, Download, Menu, X, Anchor } from 'lucide-react';
+import { LayoutDashboard, Package, PlusCircle, Download, Menu, X, Anchor, Receipt } from 'lucide-react';
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
@@ -13,6 +13,7 @@ export default function Nav() {
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/inventory', label: 'Inventory', icon: Package },
     { href: '/inventory/new', label: 'Add Item', icon: PlusCircle },
+    { href: '/overhead', label: 'Overhead', icon: Receipt },
   ];
 
   const isActive = (href: string) => {

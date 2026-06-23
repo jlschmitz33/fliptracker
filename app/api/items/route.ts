@@ -73,8 +73,13 @@ export async function POST(request: NextRequest) {
       'Frame condition check', 'Lights & wiring', 'Wheel bearings',
       'Tires & rims', 'Winch & straps', 'Bunks/rollers', 'Ready to list',
     ];
+    const trollingMotorTasks = [
+      'Thrust test', 'Prop condition check', 'Battery connection check',
+      'Mount bracket check', 'Control/cable check', 'Photos/videos taken', 'Ready to list',
+    ];
     const taskList = type === 'outboard' || type === 'bundle' ? outboardTasks
-      : type === 'boat' ? boatTasks : type === 'trailer' ? trailerTasks : [];
+      : type === 'boat' ? boatTasks : type === 'trailer' ? trailerTasks
+      : type === 'trolling motor' ? trollingMotorTasks : [];
 
     for (const [i, taskName] of taskList.entries()) {
       await db.execute({ sql: 'INSERT INTO tasks (item_id, name, sort_order) VALUES (?, ?, ?)', args: [itemId, taskName, i] });
