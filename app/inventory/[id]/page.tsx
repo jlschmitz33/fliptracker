@@ -172,6 +172,8 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
   // Expense form state
   const [expForm, setExpForm] = useState({ category: 'Parts', description: '', amount: '', date: new Date().toISOString().split('T')[0] });
   const [addingExp, setAddingExp] = useState(false);
+  const [miles, setMiles] = useState('');
+  const [ratePerMile, setRatePerMile] = useState('0.70');
 
   // Task form state
   const [newTaskName, setNewTaskName] = useState('');
@@ -458,14 +460,41 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
         {addingExp ? (
           <form onSubmit={addExpense} className="bg-slate-50 rounded-lg p-3 mb-4 space-y-2">
             <div className="grid grid-cols-2 gap-2">
-              <select value={expForm.category} onChange={e => setExpForm(f => ({ ...f, category: e.target.value }))}
-                className={inputCls}>
+              <select value={expForm.category} onChange={e => {
+                setExpForm(f => ({ ...f, category: e.target.value, amount: '' }));
+                setMiles('');
+              }} className={inputCls}>
                 {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
-              <input type="number" placeholder="Amount ($)" value={expForm.amount} step="0.01" min="0"
-                onChange={e => setExpForm(f => ({ ...f, amount: e.target.value }))}
-                className={inputCls} required />
+              {expForm.category === 'Travel/Mileage' ? (
+                <div className="flex gap-1 items-center">
+                  <input type="number" placeholder="Miles" value={miles} min="0" step="0.1"
+                    onChange={e => {
+                      setMiles(e.target.value);
+                      const computed = parseFloat(e.target.value) * parseFloat(ratePerMile || '0');
+                      setExpForm(f => ({ ...f, amount: isNaN(computed) ? '' : computed.toFixed(2) }));
+                    }}
+                    className={inputCls} />
+                  <span className="text-slate-400 text-xs shrink-0">×</span>
+                  <input type="number" placeholder="$/mi" value={ratePerMile} min="0" step="0.01"
+                    onChange={e => {
+                      setRatePerMile(e.target.value);
+                      const computed = parseFloat(miles || '0') * parseFloat(e.target.value);
+                      setExpForm(f => ({ ...f, amount: isNaN(computed) ? '' : computed.toFixed(2) }));
+                    }}
+                    className={`${inputCls} w-20`} />
+                </div>
+              ) : (
+                <input type="number" placeholder="Amount ($)" value={expForm.amount} step="0.01" min="0"
+                  onChange={e => setExpForm(f => ({ ...f, amount: e.target.value }))}
+                  className={inputCls} required />
+              )}
             </div>
+            {expForm.category === 'Travel/Mileage' && miles && expForm.amount && (
+              <p className="text-xs text-slate-500 bg-blue-50 rounded px-2 py-1">
+                {miles} miles × ${ratePerMile}/mi = <strong>${expForm.amount}</strong>
+              </p>
+            )}
             <input type="text" placeholder="Description (optional)" value={expForm.description}
               onChange={e => setExpForm(f => ({ ...f, description: e.target.value }))}
               className={inputCls} />
@@ -473,10 +502,11 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
               onChange={e => setExpForm(f => ({ ...f, date: e.target.value }))}
               className={inputCls} />
             <div className="flex gap-2">
-              <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+              <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+                disabled={!expForm.amount || parseFloat(expForm.amount) <= 0}>
                 Add Expense
               </button>
-              <button type="button" onClick={() => setAddingExp(false)}
+              <button type="button" onClick={() => { setAddingExp(false); setMiles(''); }}
                 className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">
                 Cancel
               </button>
