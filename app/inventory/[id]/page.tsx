@@ -173,7 +173,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
   const [expForm, setExpForm] = useState({ category: 'Parts', description: '', amount: '', date: new Date().toISOString().split('T')[0] });
   const [addingExp, setAddingExp] = useState(false);
   const [miles, setMiles] = useState('');
-  const [ratePerMile, setRatePerMile] = useState('0.70');
+  const [ratePerMile, setRatePerMile] = useState('0.65');
 
   // Task form state
   const [newTaskName, setNewTaskName] = useState('');
